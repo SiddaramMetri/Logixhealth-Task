@@ -1,0 +1,15 @@
+WITH AllDetails AS (
+SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY transaction_date) AS number
+FROM users),
+
+gettingDataFromAll AS (
+SELECT user_id, transaction_date
+FROM AllDetails
+WHERE number = 2),
+
+finalQuery AS ( SELECT DISTINCT user_id FROM users )
+SELECT finalQuery.user_id, transaction_date AS superuser_date
+FROM finalQuery
+
+LEFT JOIN gettingDataFromAll
+ON finalQuery.user_id = gettingDataFromAll.user_id
